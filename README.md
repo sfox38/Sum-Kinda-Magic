@@ -44,7 +44,7 @@ Instruct the spectator to:
 1.  Tap **"Start"** to begin the chaotic shuffling of numbers.
 2.  Tap **"Stop"** whenever they wish to lock the grid.
 3.  If they aren't happy with the numbers shown, they can tap **"Again"**.
-4.  Once satisfied, they tap **any single number** they see on the grid.
+4.  Once satisfied, they tap **any number** they choose on the grid.
 
 ### 3. The Standard Reveal
 Ask the spectator to focus on their chosen number. To "transmit" the value to you, ask them to read the colors (or shapes) of the 7 tiles in their row from left to right. Even without seeing the screen, you can successfully reveal the chosen number.
@@ -63,10 +63,10 @@ In your mind, split the row of 7 tiles into two groups of three, plus one extra 
 In each group of three, the tiles represent the values **4, 2, and 1**. A tile is counted if it is "Highlighted" (e.g., Red in the default theme, or a Square in the Woodcut theme).
 
 ### The Method
-1.  **First 3 tiles:** Add the values of only the highlighted tiles. This is your **first digit**.
-2.  **Next 3 tiles:** Add the values of only the highlighted tiles. This is your **second digit**.
+1.  **First 3 tiles:** Add the values of the highlighted tiles. This is your **first digit**.
+2.  **Next 3 tiles:** Add the values of the highlighted tiles. This is your **second digit**.
 3.  **Last tile:** If highlighted, the number is in the **100s**. (Place a "1" in front).
-4.  **Concatenate:** Put the digits together to find the number.
+4.  **Concatenate:** Put all the digits together to find the number.
 
 <table border="0" width="100%">
   <tr>
@@ -91,7 +91,7 @@ Customize your performance by adding parameters to your link. Use `?` for the fi
 
 | Parameter | Performance Description | Highlight |
 | :--- | :--- | :--- |
-| `?x=0` | **Standard Mode:** Selected tile flips backgound color on click (Default). |
+| `?x=0` | **Standard Mode:** Selected tile flips backgound color on tap (Default). |
 | `?x=1` | **Liar Mode:** No color flip; flashing **"LIAR"** alert on the selected tile |
 | `?x=2` | **Stealth Liar Mode:** No color flip; no visual alert |
 | **Themes (t)** | | |
@@ -113,10 +113,10 @@ Customize your performance by adding parameters to your link. Use `?` for the fi
 | `?l=tc` | **繁體中文** | |
 | `?l=sc` | **简体中文** | |
 
-### 🔗 Example Setup with Combined Parameters
-* **Liar Mode (Candy / Spanish):** `https://YOUR-URL.com/?t=3&l=es&x=1`
-* **Stealth Liar (Minimal / Japanese):** `https://YOUR-URL.com/?t=8&l=jp&x=2`
-* **Standard Performance (Playful Circles / Simplified Chinese):** `https://YOUR-URL.com/?t=5&l=sc`
+### 🔗 Example Setups with Combined Parameters
+* **Liar Mode (Candy / Spanish):** [https://sfox38.github.io/Sum-Kinda-Magic/index.html?t=3&l=es&x=1](https://sfox38.github.io/Sum-Kinda-Magic/index.html?t=3&l=es&x=1)
+* **Stealth Liar (Minimal / Japanese):** [https://sfox38.github.io/Sum-Kinda-Magic/index.html?t=8&l=jp&x=2](https://sfox38.github.io/Sum-Kinda-Magic/index.html?t=8&l=jp&x=2)
+* **Standard Performance (Playful Circles / Simplified Chinese):** [https://sfox38.github.io/Sum-Kinda-Magic/index.html?t=5&l=sc](https://sfox38.github.io/Sum-Kinda-Magic/index.html?t=5&l=sc)
 
 ---
 
@@ -136,7 +136,7 @@ Sum Kinda Magic is a client-side application that can be run from any web server
 ## ℹ️ Additional Information
 
 ### 💡 Pro-Tips & Caveats
-* **The "Flip" Excuse:** In Standard Mode, the tile changes color/shape. If a spectator asks why, you can make some mystical excuse.
+* **The "Flip" Excuse:** In Standard Mode, the selected tile's color/shape changes to the opposite color. You could explain this in advance or hope the spectator doesn't notice. But if a spectator asks why, you will need to have a good explanation ready.
 * **Liar Mode Clarity:** Ensure the spectator understands they should only lie about the **color/shape** of their selected tile, not the number itself, and not to lie about any other tile in that row. For the benefit of the performance, a flashing "LIAR" text will appear over the selected tile. If you prefer not to use the "LIAR" text, you can change the URL Parameter (see above).
 * **Offline Use:** The default theme relies on system fonts and can be used entirely offline.
 
