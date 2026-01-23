@@ -1,0 +1,816 @@
+<!--
+    Sum Kinda Magic
+    v1.0
+    Copyright (C) 2026 Steven Fox
+    https://github.com/sfox38/Sum-Kinda-Magic
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title></title>
+
+    <script>
+        const DEFAULTS = {
+            theme: "0",      // "0" through "8"
+            lang: "en",       // "en", "es", "jp", etc.
+            x: "0"           // "0" = normal, "1" = liar, "2" = stealth
+        };
+
+        const CONFIG = {
+            // Localization Strings
+            translations: {
+                "en": { 
+                    title: "Sum Kinda Magic",
+                    btnBegin: "Start...", 
+                    btnStop: "Stop", 
+                    btnRandomize: "Again...", 
+                    liarPrompt: "LIAR",
+                    rows: ["       ", " S U M ", "       ", " KINDA ", "       ", " MAGIC ", "       "] 
+                },
+                "fr": { 
+                    title: "Somme De Magie",
+                    btnBegin: "Commencer...", 
+                    btnStop: "Arrêt", 
+                    btnRandomize: "Encore...", 
+                    liarPrompt: "MENTEUR",
+                    rows: ["       ", " SOMME ", "       ", "  D E  ", "       ", " MAGIE ", "       "] 
+                },
+                "de": { 
+                    title: "Fast Mathmagie",
+                    btnBegin: "Start...", 
+                    btnStop: "Stopp",
+                    btnRandomize: "Nochmal...", 
+                    liarPrompt: "LÜGNER",
+                    rows: ["       ", "F A S T", "       ", " MATH- ", "       ", " MAGIE ", "       "] 
+                },
+                "es": { 
+                    title: "Casi Sumagia",
+                    btnBegin: "Empezar...", 
+                    btnStop: "Parar", 
+                    btnRandomize: "Otra vez...", 
+                    liarPrompt: "MENTIROSO",
+                    rows: ["       ", "       ", "C A S I", "       ", "SUMAGIA", "       ", "       "] 
+                },
+                "jp": { 
+                    title: "ちょっと魔法の合計",
+                    btnBegin: "はじめる...", 
+                    btnStop: "ストップ", 
+                    btnRandomize: "もういちど...", 
+                    liarPrompt: "ウソツキ",
+                    rows: ["       ", "ち ょ っ と", "       ", "ま ほ う の", "       ", "ご う け い", "       "] 
+                },
+                "tc": { 
+                    title: "半個魔法算術",
+                    btnBegin: "開始...", 
+                    btnStop: "停止", 
+                    btnRandomize: "再一次...", 
+                    liarPrompt: "說謊者",
+                    rows: ["       ", "       ", "半 個 魔 法", "       ", "  算 術  ", "       ", "       "] 
+                },
+                "sc": { 
+                    title: "半个魔法算术",
+                    btnBegin: "开始...", 
+                    btnStop: "停止", 
+                    btnRandomize: "再一次...", 
+                    liarPrompt: "说谎者",
+                    rows: ["       ", "       ", "半 个 魔 法", "       ", "  算 术  ", "       ", "       "] 
+                }
+            },
+            
+            // Base sets for the grid logic
+            baseSet: [
+                { pattern: [false, false, false, false, false, true, true], numbers: [141, 121, 111, 105, 103, 100, 1] },
+                { pattern: [false, false, false, true, true, false, true], numbers: [146, 126, 116, 102, 104, 107, 6] },
+                { pattern: [false, false, false, true, true, true, false], numbers: [47, 27, 17, 3, 5, 6, 107] },
+                { pattern: [false, false, false, true, true, true, true], numbers: [147, 127, 117, 103, 105, 106, 7] },
+                { pattern: [false, false, true, false, true, false, false], numbers: [52, 32, 2, 16, 10, 13, 112] },
+                { pattern: [false, false, true, false, true, true, false], numbers: [53, 33, 3, 17, 11, 12, 113] },
+                { pattern: [false, false, true, true, false, false, false], numbers: [54, 34, 4, 10, 16, 15, 114] },
+                { pattern: [false, false, true, true, false, false, true], numbers: [154, 134, 104, 110, 116, 115, 14] },
+                { pattern: [false, true, false, false, true, true, false], numbers: [63, 3, 33, 27, 21, 22, 123] },
+                { pattern: [false, true, false, false, true, true, true], numbers: [163, 103, 133, 127, 121, 122, 23] },
+                { pattern: [false, true, false, true, false, true, false], numbers: [65, 5, 35, 21, 27, 24, 125] },
+                { pattern: [false, true, false, true, false, true, true], numbers: [165, 105, 135, 121, 127, 124, 25] },
+                { pattern: [false, true, true, false, false, false, false], numbers: [70, 10, 20, 34, 32, 31, 130] },
+                { pattern: [false, true, true, false, false, false, true], numbers: [170, 110, 120, 134, 132, 131, 30] },
+                { pattern: [false, true, true, true, false, false, false], numbers: [74, 14, 24, 30, 36, 35, 134] },
+                { pattern: [false, true, true, true, true, true, false], numbers: [77, 17, 27, 33, 35, 36, 137] },
+                { pattern: [true, false, false, false, false, false, true], numbers: [100, 160, 150, 144, 142, 141, 40] },
+                { pattern: [true, false, false, false, false, true, false], numbers: [1, 61, 51, 45, 43, 40, 141] },
+                { pattern: [true, false, false, false, false, true, true], numbers: [101, 161, 151, 145, 143, 140, 41] },
+                { pattern: [true, false, false, false, true, false, false], numbers: [2, 62, 52, 46, 40, 43, 142] },
+                { pattern: [true, false, false, false, true, false, true], numbers: [102, 162, 152, 146, 140, 143, 42] },
+                { pattern: [true, false, false, false, true, true, false], numbers: [3, 63, 53, 47, 41, 42, 143] },
+                { pattern: [true, false, false, false, true, true, true], numbers: [103, 163, 153, 147, 141, 142, 43] },
+                { pattern: [true, false, false, true, false, false, false], numbers: [4, 64, 54, 40, 46, 45, 144] },
+                { pattern: [true, false, false, true, false, false, true], numbers: [104, 164, 154, 140, 146, 145, 44] },
+                { pattern: [true, false, false, true, true, false, false], numbers: [6, 66, 56, 42, 44, 47, 146] },
+                { pattern: [true, false, false, true, true, false, true], numbers: [106, 166, 156, 142, 144, 147, 46] },
+                { pattern: [true, false, false, true, true, true, false], numbers: [7, 67, 57, 43, 45, 46, 147] },
+                { pattern: [true, false, false, true, true, true, true], numbers: [107, 167, 157, 143, 145, 146, 47] },
+                { pattern: [true, false, true, false, false, true, false], numbers: [11, 71, 41, 55, 53, 50, 151] },
+                { pattern: [true, false, true, false, true, true, false], numbers: [13, 73, 43, 57, 51, 52, 153] },
+                { pattern: [true, true, false, false, false, false, false], numbers: [20, 40, 70, 64, 62, 61, 160] },
+                { pattern: [true, true, false, false, true, true, false], numbers: [23, 43, 73, 67, 61, 62, 163] },
+                { pattern: [true, true, false, true, false, true, false], numbers: [25, 45, 75, 61, 67, 64, 165] },
+                { pattern: [true, true, false, true, false, true, true], numbers: [125, 145, 175, 161, 167, 164, 65] },
+                { pattern: [true, true, false, true, true, true, false], numbers: [27, 47, 77, 63, 65, 66, 167] },
+                { pattern: [true, true, true, true, false, false, false], numbers: [34, 54, 64, 70, 76, 75, 174] },
+                { pattern: [true, true, true, true, true, false, false], numbers: [36, 56, 66, 72, 74, 77, 176] }
+            ]
+        };
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Fredoka:wght@600&family=Metamorphous&family=DynaPuff:wght@600&family=Righteous&family=Train+One&family=Julius+Sans+One&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /*  ================================================================
+            LAYOUT & CORE CSS
+            ================================================================
+        */
+        :root { 
+            --cell-size: min(12vw, 4.5rem); 
+        }
+
+        * { 
+            -webkit-user-select: none; 
+            user-select: none; 
+            -webkit-touch-callout: none; 
+            box-sizing: border-box; 
+        }
+
+        html, body { 
+            height: 100%; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+        }
+
+        body { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background: var(--body-bg); 
+            background-attachment: fixed; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        .app-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%;
+            padding: 0 1rem; 
+            margin-top: 2rem; 
+        }
+        
+        /* Grid Structure */
+        .grid { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            padding: 6px; 
+            border-radius: 0.75rem; 
+            border: 1px solid var(--grid-border); 
+            background: var(--grid-bg, rgba(20, 20, 20, 0.9)); 
+            position: relative; 
+        }
+
+        #grid {
+            /* Prevents the browser from handling touch for scrolling, 
+               allowing this script to catch the movement instead */
+            touch-action: none; 
+            user-select: none;
+        }
+
+        #grid-overlay { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            z-index: 1000; 
+            display: block; 
+            border-radius: inherit; 
+        }
+
+        .grid-row { 
+            display: grid; 
+            grid-template-columns: repeat(7, var(--cell-size)); 
+            grid-template-rows: var(--cell-size); 
+            gap: 4px; 
+            position: relative; 
+            border: none; 
+            outline: 3px solid transparent;
+            outline-offset: 6px; 
+            border-radius: var(--frame-radius, 4px);
+            transition: outline 2s ease, background-color 2s ease, opacity 2s ease, filter 2s ease;
+        }
+
+        .cell { 
+            font-family: var(--main-font); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: calc(var(--cell-size) * 0.35); 
+            font-weight: bold; 
+            border-radius: 4px; 
+            cursor: pointer;
+            user-select: none;
+            touch-action: none;
+            -webkit-user-select: none;
+            transition: transform 0.1s ease; /* Smooths the pop-back */        
+        }
+        /* Tactile feedback for the press */
+        .cell:active {
+            transform: scale(0.9);
+            transition: transform 0.05s;
+            filter: brightness(1.2); /* Slight glow to show it's active */
+        }
+        /* Container for the selected cell in Liar Mode */
+        .cell.lie-mode-target {
+            position: relative;
+            container-type: size; /* Allows the LIAR text to measure this square */
+            z-index: 5;
+        }
+        /* The Inverted Strobe "LIAR" text */
+        .cell.lie-mode-target::after {
+            content: var(--liar-text);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            
+            width: 95%;
+            height: 40%;
+            border-radius: 4px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 0;
+
+            font-weight: 900;
+            font-size: 18cqw; /* Slightly smaller to prevent overflow */
+            white-space: nowrap;
+
+            z-index: 10;
+            pointer-events: none;
+            animation: text-flash 3s infinite;
+        }
+        @keyframes text-flash {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes horizontalWave {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /*  ================================================================
+            VISUAL THEMES (0-8)
+            ================================================================
+        */
+
+        /* Theme 0: Default */
+        .theme-0 { 
+            --body-bg: #000; --grid-border: transparent; --grid-bg: transparent; 
+            --color-zero: #007bff; --color-one: #ff0000; --color-selected: #ffff00; 
+            --btn-start: #111; --btn-stop: #333; --main-font: 'Arial'; --flash-bg: #fff; 
+        }
+        .theme-0 .cell { color: #fff; background: #111; border: 1px solid #333; }
+        .theme-0 #mainBtn { background: #111; border: 2px solid #007bff; box-shadow: 0 0 10px #007bff; color: #007bff; }
+        .theme-0 #mainBtn.stop-btn { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; color: #ff0000; }
+
+        /* Theme 1: Autumn */
+        .theme-1 { 
+            --body-bg: #7f4f2f; --grid-border: transparent; --color-zero: #a000ff; 
+            --color-one: #ff7f00; --color-selected: #ff9010; --btn-start: #c04000; 
+            --btn-stop: #ff00ff; --main-font: 'Righteous'; --flash-bg: #00ffff; 
+        }
+        .theme-1 .cell { color: #fff; background: #2a0055; }
+
+        /* Theme 2: Deep Sea */
+        .theme-2 { 
+            --body-bg: #051a24; --grid-border: #2ecc71; --color-zero: #0077be; 
+            --color-one: #2ecc71; --color-selected: #00ffff; --btn-start: #2ecc71; 
+            --btn-stop: #0077be; --main-font: 'Orbitron'; --flash-bg: #00ffff; 
+        }
+        .theme-2 .cell { color: #fff; background: #0a1f2a; }
+
+        /* Theme 3: Candy Shop */
+        .theme-3 { 
+            --body-bg: #fefae0; --grid-border: transparent; --grid-bg: #fefae0; 
+            --color-zero: #a2d2ff; --color-one: #ffafcc; --color-selected: #5c4033; 
+            --btn-start: #cdb4db; --btn-stop: #bde0fe; --main-font: 'DynaPuff'; 
+            --flash-bg: #fb6f92; --frame-radius: 1px;
+        }
+        .theme-3 .cell { color: #5c4033; background: #fff; border: 1px solid #ddd; }
+        .theme-3 #mainBtn {
+            width: 36vw !important;
+            height: 36vw !important;
+            max-width: 140px !important;
+            max-height: 140px !important;
+            display: inline-flex !important; 
+            align-items: center;
+            justify-content: center;
+            margin: 8px auto !important;
+
+            background-color: inherit !important;
+            color: inherit !important;
+            font-size: 1.4rem;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            
+            box-shadow: 
+                inset 4px 4px 6px rgba(255, 255, 255, 0.15), 
+                inset -4px -4px 6px rgba(0, 0, 0, 0.3),
+                0 6px 12px rgba(0, 0, 0, 0.25);
+
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.1;
+
+            text-shadow: 0 1px 1px rgba(0,0,0,0.2); 
+        }
+        /* Feedback when pressed */
+        .theme-3 #mainBtn:active {
+            transform: scale(0.95) translateY(2px);
+            box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Theme 4: Paper */
+        .theme-4 { 
+            --body-bg: #fdf6e3; --grid-border: transparent; --grid-bg: transparent; 
+            --color-zero: #eee8d5; --color-one: #93a1a1; --color-selected: #000; 
+            --btn-start: #f4f4f4; --btn-stop: #ddd; --main-font: 'Courier Prime';
+            --flash-bg: #fff; --frame-radius: 0px;
+        }
+        .theme-4 .cell, .theme-4 #mainBtn, .theme-4 .grid { border-radius: 0 !important; }
+        .theme-4 .grid .cell { color: #000 !important; border: 1px solid #ccc; }
+        .theme-4 .grid .cell.zero { background: #eee8d5 !important; }
+        .theme-4 .grid .cell.one { background: #93a1a1 !important; }
+        .theme-4 #mainBtn { border: 1px solid #ccc; color: #444; }
+
+        /* Theme 5: Playful Circles */
+        .theme-5 { 
+            --body-bg: #CFBB3B; --grid-border: transparent; --grid-bg: transparent; 
+            --color-zero: #2196F3; --color-one: #4CAF50; --color-selected: #E91E63; 
+            --btn-start: #FF5722; --btn-stop: #9C27B0; --main-font: 'Fredoka';
+            --flash-bg: #ffffff; --frame-radius: calc(var(--cell-size) / 2);
+        }
+        .theme-5 .cell { color: #ffffff; border-radius: 50%; }
+        .theme-5 #mainBtn { width: 8rem; height: 8rem; border-radius: 50%; padding: 0; font-size: 1.2rem; }
+
+        /* Theme 6: Woodcut */
+        .theme-6 { 
+            --body-bg: #445740; --grid-border: #2e1d13; 
+            --color-zero: #6A4E42; --color-one: #6A4E42; --color-selected: #f3e5ab; 
+            --btn-start: #3e2723; --btn-stop: #A0522D; --main-font: 'Metamorphous'; --flash-bg: #d7ccc8; 
+        }
+        .theme-6 .cell { background: var(--color-zero); border: 2px solid #3e2723; color: #f3e5ab; }
+        .theme-6 .cell.zero { border-radius: 50%; }
+        .theme-6 .cell.one { border-radius: 15%; }
+        .theme-6 .grid-row.row-highlight { 
+            background: rgba(243, 229, 171, 0.4) !important; 
+            margin: -6px; padding: 6px; border-radius: 1.5rem; z-index: 2; border: none !important;
+        }
+
+        /* Theme 7: Monochrome */
+        .theme-7 { 
+            --body-bg: linear-gradient(180deg, #1a1a1a 0%, #444444 100%); --grid-border: #555; 
+            --color-zero: #000; --color-one: #fff; --color-selected: #fff; 
+            --btn-start: #222; --btn-stop: #000; --main-font: 'Train One'; 
+            --flash-bg: #888; --frame-radius: 1px;
+        }
+        .theme-7 .grid .cell { color: #888 !important; border: 1px solid #333; }
+        .theme-7 #mainBtn {
+            width: 36vw !important;
+            height: 36vw !important;
+            max-width: 140px !important;
+            max-height: 140px !important;
+            display: inline-flex !important; 
+            align-items: center;
+            justify-content: center;
+            margin: 8px auto !important;
+            background-color: inherit !important;
+            color: #ffffff !important;
+            font-size: 1.1rem !important;
+
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            
+            box-shadow: 
+                inset 4px 4px 6px rgba(255, 255, 255, 0.15), 
+                inset -4px -4px 6px rgba(0, 0, 0, 0.3),
+                0 6px 12px rgba(0, 0, 0, 0.25);
+
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.1;
+
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+        /* Feedback when pressed */
+        .theme-7 #mainBtn:active {
+            transform: scale(0.95) translateY(2px);
+            box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Theme 8: Minimal */
+        .theme-8 { 
+            --body-bg: linear-gradient(90deg, #f0f0f0, #d6d6d6, #f0f0f0, #e0e0e0, #f0f0f0);
+            --grid-border: transparent; --grid-bg: transparent; 
+            --color-zero: transparent; --color-one: transparent; 
+            --color-selected: #333; --btn-start: transparent; --btn-stop: transparent; 
+            --main-font: 'Julius Sans One', sans-serif; --flash-bg: #bbb; 
+        }
+        .theme-8 body { background-size: 400% 100%; animation: horizontalWave 5s ease-in-out infinite; }
+        .theme-8 .grid { border: none; padding: 0; }
+        .theme-8 .grid .cell { color: #333 !important; border: 1.5px solid #333; background: transparent !important; }
+        .theme-8 .grid .cell.zero { border-radius: 50%; }
+        .theme-8 .grid .cell.one { border-radius: 0%; }
+        .theme-8 #mainBtn { 
+            font-family: 'Julius Sans One', sans-serif !important; border: 1.5px solid #333; color: #333; 
+            letter-spacing: 5px; font-size: 1.6rem; padding: 1.5rem 0; width: calc((var(--cell-size) * 7) + 24px); 
+            border-radius: 0; font-weight: bold; background: transparent; margin-top: 2rem;
+        }
+        .theme-8 .grid-row.row-highlight { 
+            background: rgba(51, 51, 51, 0.08) !important; 
+            margin: -8px; padding: 8px; border-radius: 8px; z-index: 2; border: none !important;
+        }
+
+        /* Logic-based Styles */
+        .cell.zero { background: var(--color-zero); }
+        .cell.one { background: var(--color-one); }
+        .cell.flashing { background: var(--flash-bg) !important; color: #000 !important; transform: scale(0.9); }
+        .cell.selected { box-shadow: 0 0 30px var(--color-selected); z-index: 5; }
+        .row-dimmed {
+            opacity: 0.15; 
+            filter: grayscale(80%) blur(2px);
+            /* Ensures the 'fading out' of non-selected rows is also gradual */
+            transition: opacity 2s ease, filter 2s ease;
+        }
+        
+        .grid-row.row-highlight {
+            outline-color: var(--color-selected);
+            background-color: rgba(255, 255, 255, 0.05);
+            z-index: 10;
+        }
+
+        .row-highlight .cell:not(.selected) span {
+            opacity: 0.15;
+            filter: blur(1px);
+            transition: opacity 2.5s ease, filter 2.5s ease;
+        }
+
+        /* Keeps the selected number bright */
+        .row-highlight .cell.selected span {
+            opacity: 1;
+            filter: blur(0) !important;
+            transition: none;
+        }
+
+        .controls { width: 100%; margin-top: 2rem; height: 10rem; display: flex; align-items: center; justify-content: center; }
+        #mainBtn { font-family: var(--main-font); width: min(70vw, 25rem); padding: 1rem 0; font-size: 1.2rem; cursor: pointer; background: var(--btn-start); color: #fff; border: none; border-radius: 0.5rem; font-weight: bold; text-transform: uppercase; transition: opacity 0.5s ease; opacity: 1;}
+        #resultDisplay {
+            font-size: calc(var(--cell-size) * 2.5);
+            padding-top: 4rem;
+            letter-spacing: 1rem;
+            text-indent: 1.5rem;
+            font-weight: 900;
+            text-align: center;
+            width: 100%;
+            color: var(--color-selected);
+            font-family: var(--main-font);
+            cursor: pointer;
+            display: none;
+            opacity: 0;
+            transform: scale(0.7);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+        }
+        /* This triggers the fade and zoom */
+            #resultDisplay.show-result {
+            opacity: 1 !important;
+            transform: scale(1) !important;
+        }
+        /* The Pulse Animation */
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.04); }
+            100% { transform: scale(1); }
+        }
+
+        /* The class that triggers the pulse */
+        .pulsing {
+            animation: pulse-animation 1.5s infinite ease-in-out;
+        }
+
+        .hide-btn {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+        /* Trigger the reveal */
+        .show-result {
+            opacity: 1 !important;
+        }
+
+        #mainBtn, .cell {
+           touch-action: manipulation;
+        }
+
+        /* Guardrail: Force the button to hide during the Reveal phase */
+        #mainBtn[style*="display: none"] {
+            display: none !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="app-container">
+        <div class="grid" id="grid"><div id="grid-overlay"></div></div>
+        <div class="controls">
+            <button id="mainBtn"></button>
+            <div id="resultDisplay"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * APPLICATION LOGIC
+         * An interactive grid for mentalism performances featuring 
+         * dynamic theme switching, liar-mode logic, and coordinated animations.
+         */
+
+        // --- GLOBAL CONFIGURATION & URL PARAMETERS ---
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Settings derived from URL (Lang, Theme 0-8, Mode X)
+        const lang = urlParams.get('l') || DEFAULTS.lang;
+        const rawTheme = urlParams.get('t') || DEFAULTS.theme;
+        const themeKey = (parseInt(rawTheme) >= 0 && parseInt(rawTheme) <= 8) ? rawTheme : DEFAULTS.theme;
+        const MODE_X = urlParams.get('x') || DEFAULTS.x;
+        
+        // Logic: Flip binary state unless in Liar Mode 1 or 2
+        const SHOULD_FLIP = (MODE_X !== '1' && MODE_X !== '2');
+        const autoReload = urlParams.get('a') === '1'; 
+        const activeLang = CONFIG.translations[lang] || CONFIG.translations["en"];
+
+        // --- STATE VARIABLES ---
+        let chaosInterval = null;   // Reference for the scramble timer
+        let selectionMade = false;  // Prevents multiple selections after reveal
+        let pressedCell = null;     // Tracks pointer interaction for clean selection
+
+        // --- INITIAL UI SETUP ---
+        document.title = activeLang.title;
+        document.body.className = 'theme-' + themeKey;
+        const btn = document.getElementById('mainBtn');
+        btn.textContent = activeLang.btnBegin;
+
+        // --- GLOBAL EVENT LISTENERS ---
+        // Global pointerup handles cases where user drags off the grid
+        window.addEventListener('pointerup', () => { pressedCell = null; });
+        btn.addEventListener('click', toggleRandomize);
+
+        /**
+         * Toggles the "Chaos" state (randomizing numbers/colors) 
+         * or locks in the selection grid.
+         */
+        function toggleRandomize() {
+            const btn = document.getElementById('mainBtn');
+            const overlay = document.getElementById('grid-overlay');
+
+            if (!chaosInterval) {
+                // START SCRAMBLE
+                btn.textContent = activeLang.btnStop;
+                btn.classList.add('pulsing');
+                if (overlay) overlay.style.display = 'block';
+                chaosInterval = setInterval(runChaosFrame, 333); 
+            } else {
+                // STOP SCRAMBLE & GENERATE PLAYABLE GRID
+                clearInterval(chaosInterval);
+                chaosInterval = null;
+                btn.textContent = activeLang.btnRandomize;
+                btn.classList.remove('pulsing');
+                if (overlay) overlay.style.display = 'none';
+                selectionMade = false;
+                createGrid(); 
+            }
+        }
+
+        /**
+         * Visual-only scramble frame: updates numbers and binary colors.
+         */
+        function runChaosFrame() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                let span = cell.querySelector('span');
+                if (!span) {
+                    cell.textContent = ''; 
+                    span = document.createElement('span');
+                    cell.appendChild(span);
+                }
+                const isOne = Math.random() > 0.5;
+                cell.classList.toggle('one', isOne);
+                cell.classList.toggle('zero', !isOne);
+                span.textContent = Math.floor(Math.random() * 197) + 1;
+            });
+        }
+
+        /**
+         * Generates the mathematical grid based on baseSet.
+         * Includes collision detection to prevent similar-looking rows.
+         */
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            // Cleanup previous rows
+            grid.querySelectorAll('.grid-row:not(#grid-overlay)').forEach(r => r.remove());
+
+            // Shuffle pool of available rows
+            let pool = [...CONFIG.baseSet];
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            const selectedRows = [];
+            // Select 7 rows that are mathematically distinct
+            for (let i = 0; i < pool.length; i++) {
+                if (selectedRows.length >= 7) break;
+                const candidate = pool[i];
+                const lastSelected = selectedRows[selectedRows.length - 1];
+
+                // Ensure row isn't a 6/7 binary match with existing rows
+                const isTooSimilarGlobal = selectedRows.some(selected => {
+                    let matches = 0;
+                    for (let k = 0; k < 7; k++) {
+                        if (candidate.pattern[k] === selected.pattern[k]) matches++;
+                    }
+                    return matches >= 6; 
+                });
+
+                // Prevent digit patterns or binary mirrors on adjacent rows
+                let isIllegalAdjacent = false;
+                if (lastSelected) {
+                    const candDigits = candidate.numbers.map(n => n % 10).join(',');
+                    const lastDigits = lastSelected.numbers.map(n => n % 10).join(',');
+                    const isIdentityTwin = (candDigits === lastDigits);
+                    let patternPrefixMatches = 0;
+                    for (let k = 0; k < 6; k++) {
+                        if (candidate.pattern[k] === lastSelected.pattern[k]) patternPrefixMatches++;
+                    }
+                    const isBinaryMirror = (patternPrefixMatches === 6);
+                    isIllegalAdjacent = isIdentityTwin || isBinaryMirror;
+                }
+
+                if (!isTooSimilarGlobal && !isIllegalAdjacent) {
+                    selectedRows.push(candidate);
+                }
+            }
+
+            // Fallback: fill remaining rows if pool is exhausted
+            if (selectedRows.length < 7) {
+                for (let i = 0; i < pool.length; i++) {
+                    if (selectedRows.length >= 7) break;
+                    if (!selectedRows.includes(pool[i])) selectedRows.push(pool[i]);
+                }
+            }
+
+            // Render Rows and Cells
+            selectedRows.forEach((rowObj, rIdx) => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'grid-row';
+                rowDiv.dataset.row = rIdx;
+                rowObj.pattern.forEach((isStateOne, cIdx) => {
+                    const cell = document.createElement('div');
+                    cell.className = `cell theme-${themeKey} ${isStateOne ? 'one' : 'zero'}`;
+                    cell.innerHTML = `<span>${rowObj.numbers[cIdx]}</span>`;
+                    cell.dataset.row = rIdx;
+
+                    // Pointer interaction logic for selection
+                    cell.addEventListener('pointerdown', (e) => {
+                        if (!selectionMade) {
+                            pressedCell = cell;
+                            cell.setPointerCapture(e.pointerId);
+                        }
+                    });
+                    cell.addEventListener('pointerup', (e) => {
+                        if (pressedCell === cell) {
+                            const endElement = document.elementFromPoint(e.clientX, e.clientY);
+                            if (endElement === cell || cell.contains(endElement)) {
+                                finalizeSelection(cell);
+                            }
+                        }
+                        pressedCell = null;
+                    });
+                    cell.addEventListener('pointercancel', () => { pressedCell = null; });
+                    rowDiv.appendChild(cell);
+                });
+                grid.appendChild(rowDiv);
+            });
+        }
+
+        /**
+         * Triggers final reveal animation, UI handoff, and row highlighting.
+         */
+        function finalizeSelection(cell) {
+            if (selectionMade || !cell) return;
+            selectionMade = true;
+
+            // Handle Secret Modes
+            if (SHOULD_FLIP) {
+                // Regular mode: flip binary color to confirm choice
+                const isOne = cell.classList.contains('one');
+                cell.classList.remove('one', 'zero');
+                cell.classList.add(isOne ? 'zero' : 'one');
+            } else if (MODE_X === '1') {
+                // Liar Mode: show subtle prompt on selected cell
+                const translatedLiar = activeLang.liarPrompt || "LIAR";
+                cell.style.setProperty('--liar-text', `"${translatedLiar}"`);
+                cell.classList.add('lie-mode-target');
+            }
+
+            cell.classList.add('selected');
+            document.getElementById('grid-overlay').style.display = 'block'; 
+
+            const res = document.getElementById('resultDisplay');
+            const btn = document.getElementById('mainBtn');
+            res.textContent = cell.textContent; 
+
+            // --- COORDINATED UI HANDOFF ---
+            // 1. Hide Button immediately
+            btn.classList.add('hide-btn');
+            
+            // 2. Wait for button fade (500ms), then initiate result reveal
+            setTimeout(() => {
+                btn.style.display = 'none';
+                res.style.display = 'block'; 
+                setTimeout(() => {
+                    // Triggers 1s CSS zoom + fade-in
+                    res.classList.add('show-result');
+                }, 50);
+            }, 500);
+
+            // Setup Auto-Reload interaction on result click
+            if (autoReload) {
+                res.onclick = () => location.reload();
+                res.style.cursor = "pointer";
+            }
+
+            // Highlighting row logic: Dim non-selected rows, Frame selected row
+            const rIdx = cell.dataset.row; 
+            document.querySelectorAll('.grid-row').forEach(row => { 
+                if (row.dataset.row === rIdx) {
+                    row.classList.add('row-highlight');
+                } else {
+                    row.classList.add('row-dimmed'); 
+                }
+            }); 
+            pressedCell = null;
+        }
+
+        /**
+         * Renders an initial decorative grid on page load.
+         */
+        function createEmptyGrid() { 
+            const grid = document.getElementById('grid'); 
+            activeLang.rows.forEach(rowData => { 
+                const rowDiv = document.createElement('div'); 
+                rowDiv.className = 'grid-row'; 
+                rowData.padEnd(7, ' ').substring(0, 7).split('').forEach(char => { 
+                    const cell = document.createElement('div'); 
+                    cell.className = `cell theme-${themeKey} ${Math.random() > 0.5 ? 'one' : 'zero'}`;
+                    if (char !== ' ') cell.innerHTML = `<span>${char}</span>`; 
+                    rowDiv.appendChild(cell); 
+                }); 
+                grid.appendChild(rowDiv); 
+            }); 
+        }
+
+        // Initialize display
+        createEmptyGrid();
+    </script>
+</body>
+</html>
