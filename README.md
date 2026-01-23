@@ -120,6 +120,19 @@ Customize your performance by adding parameters to your link. Use `?` for the fi
 
 ---
 
+## 🌐 Hosting & Usage
+
+Sum Kinda Magic is a client-side application that can be run from any web server. You have three primary ways to use it:
+
+1. **Official Hosted Version:** You can link directly to the live version hosted on GitHub Pages. You can also add URL parameters (see above):
+   👉 [https://sfox38.github.io/Sum-Kinda-Magic/index.html](https://sfox38.github.io/Sum-Kinda-Magic/index.html)
+
+2. **Quick Access:** Scan this QR code to open the app on a mobile device (Default theme and language, using Standard routine):
+
+<p align="center"><img src="./screenshots/qr-code.png" width="33%" alt="QR Code"></p>
+
+3. **Self-Hosting:** Since this app is a single-file HTML5 document, you can download [index.html](https://sfox38.github.io/Sum-Kinda-Magic/index.html) (Right-click and "Save Link As..."), then upload it to your own server, or even run it locally on your device without an internet connection (default theme).
+
 ## ℹ️ Additional Information
 
 ### 💡 Pro-Tips & Caveats
