@@ -75,7 +75,7 @@ In each group of three, the tiles represent the values **4, 2, and 1**. A tile i
     <td width="33%"><img src="./screenshots/example3.jpg" style="width:100%;"></td>
   </tr>
   <tr>
-    <td width="33%"><img src="./screenshots/example4.jpg" style="width:100%;"></td>
+    <td width="33%"><img src="./screenshots/example4.jpg?a" style="width:100%;"></td>
     <td width="33%"><img src="./screenshots/example5.jpg" style="width:100%;"></td>
     <td width="33%"><img src="./screenshots/example6.jpg" style="width:100%;"></td>
   </tr>
